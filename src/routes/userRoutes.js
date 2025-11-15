@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUser, login, register } from '../controllers/userController.js';
+import { getUser, googleAuth, login, register } from '../controllers/userController.js';
 import protect from '../middleware/authMiddleware.js';
 
 
@@ -7,6 +7,7 @@ const userRouter = express.Router();    // we just need a Router from the expres
 
 userRouter.post('/register', register);
 userRouter.post('/login', login);
+userRouter.post('/google', googleAuth);
 userRouter.get('/getuser', protect , getUser);     // we want that whenever user access detail from frontend it verify the token using protected middleware
 
 export default userRouter;

@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from 'google-auth-library';
 
 
 // auth token 
@@ -10,13 +11,16 @@ const generateToken = (userId) => {
     return token;
 }
 
+// Get client from OAuth2Client
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+
 // register controller
 export const register = async (req, res) =>{
     
     try{
 
         const {name, email, password} = req.body;
-        console.log(req.body);
                 
         // In case user try to register with already registered mail
         const user = await User.findOne({email});
@@ -28,8 +32,6 @@ export const register = async (req, res) =>{
         const newUser = await User.create({
             name, email, password: hashedPass
         })
-
-        console.log(newUser);
 
         return res.status(201).json({
             message: "Registration successful",
@@ -72,6 +74,55 @@ export const login = async (req, res) =>{
 
     }
     catch (err){
+        return res.status(500).json({message: 'server error', error: err.message});
+    }
+};
+
+
+// Goolgle controller
+export const googleAuth = async (req, res) =>{
+    
+    try{
+
+        const { credential } = req.body;
+
+        // verify google token 
+        const ticket = await client.verifyIdToken({
+           idToken: credential,
+           audience: process.env.GOOGLE_CLIENT_ID 
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        // In case user try to register with already registered mail
+        let user = await User.findOne({email});
+        
+        if(!user){
+            user = await User.create({
+                name,
+                email,
+                googleId,
+                avatar: picture,
+                authProvider: 'google',
+            });
+        } else if (!user.googleId) {
+            // Link existing email/password user with Google
+            user.googleId = googleId;
+            user.avatar = picture;
+            user.authProvider = 'google';
+            await user.save();
+        }
+
+        return res.status(201).json({
+            message: "Google Registration successful",
+            user,
+            token: generateToken(user._id),
+        });
+
+    }
+    catch (err){
+        console.log(err);
         return res.status(500).json({message: 'server error', error: err.message});
     }
 };
