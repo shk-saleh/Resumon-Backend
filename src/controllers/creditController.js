@@ -1,19 +1,26 @@
 import User from '../models/user.js';
-import Activity from '../models/Activity.js';
+import Resume from '../models/resume.js';
+
 
 // Get user credits
 export const getUserCredits = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     return res.status(200).json({
       credits: user.credits,
     });
 
   } catch (err) {
+    console.error("GET CREDITS ERROR", err);
     return res.status(500).json({ message: err.message });
   }
 };
+
 
 // Use a credit
 export const deductCredit = async (req, res) => {
@@ -22,7 +29,7 @@ export const deductCredit = async (req, res) => {
     const user = await User.findById(req.user._id);
     
     // Deduct credit for free users
-    const updatedCredits = await user.deductCredit();
+    const updatedCredits = await user.detectCredit();
     
     return res.status(200).json({
       message: 'Credit deducted successfully',

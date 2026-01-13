@@ -18,11 +18,12 @@ const resumeSchema = new mongoose.Schema({
     website: String,
     linkedin: String,
     profileImage: String
-  },
+  },  
   
   summary: { type: String },    
   
   experience: [{
+    _id: String,
     company: String,
     position: String,
     startDate: Date,
@@ -32,6 +33,7 @@ const resumeSchema = new mongoose.Schema({
   }],
   
   education: [{
+    _id: String,
     institution: String,
     degree: String,
     startDate: Date,
@@ -40,11 +42,10 @@ const resumeSchema = new mongoose.Schema({
     grade: String
   }],
   
-  skills: [{
-    items: [String]
-  }],
+  skills: [String],
   
   projects: [{
+    _id: String,
     name: String,
     description: String,
     technologies: [String],
@@ -54,6 +55,7 @@ const resumeSchema = new mongoose.Schema({
   }],
   
   certifications: [{
+    _id: String,
     title: String,
     organization: String,
     issueDate: Date,

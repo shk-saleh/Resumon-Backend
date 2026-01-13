@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import Waitlist from "../models/waitlist.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from 'google-auth-library';
@@ -79,6 +80,32 @@ export const login = async (req, res) =>{
 };
 
 
+// waitlist controller
+export const waitlist = async (req, res) =>{
+    
+    try{
+
+        const { email } = req.body;
+        
+        const user = await Waitlist.findOne({email});
+
+        if(user){
+            return res.status(400).json({message: 'Email already added!'});
+        }
+
+        const newUser = await Waitlist.create({ email });
+
+        return res.status(201).json({
+            newUser,
+            message: "Email added!",
+        });
+
+    }
+    catch (err){
+        return res.status(500).json({message: 'server error', error: err.message});
+    }
+};
+
 // Goolgle controller
 export const googleAuth = async (req, res) =>{
     
@@ -153,3 +180,4 @@ export const getUser = async (req, res) =>{
         return res.status(500).json({message: 'server error', error: err.message});
     }
 };
+

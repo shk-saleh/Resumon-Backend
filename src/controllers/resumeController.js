@@ -4,11 +4,12 @@ import User from '../models/user.js';
 // Create resume (Smart Builder)
 export const createResume = async (req, res) => {
   try {
+
     const userId = req.user._id; // From auth middleware
     
     // Check and deduct credit
     const user = await User.findById(userId);
-    await user.deductCredit();
+    await user.detectCredit();
     
     const resumeData = {
       userId,
@@ -18,7 +19,7 @@ export const createResume = async (req, res) => {
     const resume = await Resume.create(resumeData);
     
     return res.status(201).json({
-      message: 'Resume created successfully',
+      message: 'success',
       resume,
       credits: user.credits
     });
@@ -37,7 +38,7 @@ export const getUserResumes = async (req, res) => {
     const userId = req.user._id;
     const resumes = await Resume.find({ userId })
       .sort({ updatedAt: -1 });
-    
+
     return res.status(200).json({ resumes });
   } catch (err) {
     return res.status(500).json({ message: err.message });

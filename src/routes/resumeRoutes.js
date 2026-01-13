@@ -7,7 +7,7 @@ import {
   generateShareLink,
   downloadResume,
 } from "../controllers/resumeController.js";
-import { getUserCredits, useCredit, getDashboardStats,} from "../controllers/creditController.js";
+import { getUserCredits, deductCredit, getDashboardStats,} from "../controllers/creditController.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -25,7 +25,7 @@ router.post("/:id/download", downloadResume);
 
 // Credit routes
 router.get("/users/credits", getUserCredits);
-router.post("/users/deduct-credit", useCredit);
+router.post("/users/deduct-credit", deductCredit);
 router.get("/dashboard/stats", getDashboardStats);
 
 export default router;

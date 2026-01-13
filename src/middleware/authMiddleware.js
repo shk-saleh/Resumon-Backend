@@ -9,7 +9,7 @@ const protect =  async (req, res, next) =>{
 
     try{
         const decoded = await jwt.verify(token, process.env.JWT_SECRET)
-        req.userId = decoded.userId;
+        req.user = { _id: decoded.userId };
         next();
     }
     catch(err){

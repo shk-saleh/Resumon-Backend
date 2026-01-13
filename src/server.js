@@ -3,6 +3,7 @@ import cors from "cors";
 import connectDB from './config/db.js';
 import dotenv from 'dotenv'
 import userRouter from "./routes/userRoutes.js";
+import resumeRouter from "./routes/resumeRoutes.js"
 
 dotenv.config();
 await connectDB();
@@ -11,6 +12,8 @@ const PORT = process.env.PORT;
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/api/auth', userRouter);
 app.use('/api/resumes', resumeRouter); 
 
